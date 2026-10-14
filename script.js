@@ -22,7 +22,7 @@ async function loadData() {
     if (!res.ok) throw new Error("Could not load data.json");
 
     const json = await res.json();
-    listings = Array.isArray(json.listings) ? json.listings : [];
+    listings = Array.isArray(json) ? json : (Array.isArray(json.listings) ? json.listings : []);
     renderListings();
   } catch (e) {
     console.error("Failed to load data.json:", e);
