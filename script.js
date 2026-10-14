@@ -59,6 +59,10 @@ function applyFiltersAndSort() {
   });
 
   filtered.sort((a, b) => {
+    // Manually featured listings always appear before regular listings.
+    if (a.featured === true && b.featured !== true) return -1;
+    if (b.featured === true && a.featured !== true) return 1;
+
     if (currentSort === "name") {
       return (a.name || "").localeCompare(b.name || "");
     }
@@ -74,6 +78,16 @@ function createCard(l) {
   card.className = "card";
   card.dataset.category = l.category || "";
   card.dataset.last_checked = l.last_checked || "";
+
+  // Show a badge only when data.json explicitly sets featured: true.
+  if (l.featured === true) {
+    const featuredBadge = document.createElement("div");
+    featuredBadge.className = "featured-badge";
+    featuredBadge.textContent = "★ FEATURED";
+    featuredBadge.setAttribute("aria-label", "Featured listing");
+    card.appendChild(featuredBadge);
+  }
+
 
   // Correctly render the verification icon as SVG.
   

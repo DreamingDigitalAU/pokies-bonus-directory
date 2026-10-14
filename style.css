@@ -1094,3 +1094,28 @@ select:focus-visible,
 .card-verified {
   display: none !important;
 }
+
+
+/* MANUALLY CONTROLLED FEATURED LISTINGS */
+.featured-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  margin: 8px 0 14px;
+  padding: 6px 11px;
+  border: 1px solid #d5ad55;
+  border-radius: 6px;
+  background: #fff5dc;
+  color: #76551a;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .featured-badge {
+    margin-top: 5px;
+    margin-bottom: 12px;
+  }
+}
