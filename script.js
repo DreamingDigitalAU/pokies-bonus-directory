@@ -76,13 +76,20 @@ function createCard(l) {
   card.dataset.last_checked = l.last_checked || "";
 
   // Correctly render the verification icon as SVG.
-  const verified = document.createElement("div");
-  verified.className = "card-verified";
-  verified.innerHTML =
-    '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">' +
-    '<path fill="currentColor" d="M8 0a8 8 0 110 16A8 8 0 018 0zm3.28 5.22l-4.5 5a.75.75 0 01-1.06 0l-2-2.25a.75.75 0 111.06-1.06L7.5 9.19l3.97-4.42a.75.75 0 011.06 1.06z"></path>' +
-    '</svg>';
-  card.appendChild(verified);
+  
+const brandBadge = document.createElement("div");
+brandBadge.className = "card-brand-badge";
+
+const initials = (l.name || "BD")
+  .split(/\s+/)
+  .filter(Boolean)
+  .slice(0, 2)
+  .map(word => word.charAt(0).toUpperCase())
+  .join("");
+
+brandBadge.textContent = initials || "BD";
+brandBadge.setAttribute("aria-label", (l.name || "Directory") + " brand initials");
+card.appendChild(brandBadge);
 
   const header = document.createElement("div");
   header.className = "card-header";
