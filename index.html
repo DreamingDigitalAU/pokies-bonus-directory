@@ -1,129 +1,134 @@
-!doctype html>
-html lang="en">
-head>
-meta charset="utf-8">
-meta name="viewport" content="width=device-width, initial-scale=1">
-title>Bonus Directorytitle>
-meta name="description" content="A mobile-first searchable directory of verified online bonus offers.">
-link rel="stylesheet" href="style.css">
-head>
-body>
-header class="sticky-header">
-div class="wrap">
-div class="header-inner">
-span class="brand">BONUS DIRECTORYspan>
-div class="header-controls">
-div class="sort-wrapper">
-label>Sort:Label>
-select id="sort-select-mobile">
-option value="newest">Newestoption>
-option value="name">Nameoption>
-select>
-div>
-div class="filter-dropdown-mobile">
-span class="filter-toggle-btn">FilterSpan>
-div class="filter-dropdown-content">
-span class="filter-btn active" data-filter="all">AllSpan>
-span class="filter-btn" data-filter="welcome">WelcomeSpan>
-span class="filter-btn" data-filter="referral">ReferralSpan>
-span class="filter-btn" data-filter="fast-payouts">Fast PayoutsSpan>
-span class="filter-btn" data-filter="new">NewSpan>
-div>
-div>
-div>
-div>
-div class="header-inner">
-header>
-main>
-section class="hero">
-div class="wrap">
-span class="eyebrow">VERIFIED BONUS INFORMATIONspan>
-h1>Find the bonus. br>Check the terms.h1>
-p>A directory of verified online bonus offers. All listings are live-tested and regularly updated. We verify bonuses, referral rewards, turnover requirements, and withdrawal limits so you can compare with confidence.p>
-a class="button" href="#directory">Browse Directorya>
-div>
-section>
-section id="directory" class="wrap section">
-h2>Directoryh2>
-div class="search-bar">
-input type="search" id="search-input" placeholder="Search by name, description, or tags...">
-div class="search-icon">search-icon>
-div>
-div class="filter-buttons">
-span class="filter-btn active" data-filter="all">AllSpan>
-span class="filter-btn" data-filter="welcome">WelcomeSpan>
-span class="filter-btn" data-filter="referral">ReferralSpan>
-span class="filter-btn" data-filter="fast-payouts">Fast PayoutsSpan>
-span class="filter-btn" data-filter="new">NewSpan>
-div>
-div class="sort-dropdown">
-label>Sort by:Label>
-select id="sort-select">
-option value="newest">Newestoption>
-option value="name">Nameoption>
-select>
-div>
-div id="cards-container" class="cards-container">
-div>
-div id="empty-state" class="empty-state">
-div>
-h3>No matches foundh3>
-p>Try adjusting your search or filter.p>
-div>
-div>
-section class="how-it-works">
-div class="wrap">
-h2>How It Worksh2>
-div class="steps">
-div class="step">
-div class="step-icon">search-icon>
-h3>Search amp; Filterh3>
-p>Use the search bar and category filters to find bonuses that match your preferences.p>
-div>
-div class="step">
-div class="step-icon">check-icon>
-h3>Verified Listingsh3>
-p>Every bonus is live-tested and regularly updated to ensure accuracy.p>
-div>
-div class="step">
-div class="step-icon">info-icon>
-h3>Transparent Termsh3>
-p>We display welcome bonuses, referral rewards, turnover, and withdrawal limits clearly.p>
-div>
-div>
-div>
-section>
-section class="responsible-gambling">
-div class="wrap">
-h2>Responsible Gamblingh2>
-p>Gambling should be entertaining. Set limits, know the risks, and never wager more than you can afford to lose. If you need help, please visit GamCare at www.gamcare.org.uk or BeGambleAware.org.p>
-p>This directory provides information only and does not constitute gambling advice. Please read all terms and conditions before signing up.p>
-div>
-section>
-footer class="footer">
-div class="wrap">
-div class="footer-inner">
-div class="footer-left">
-span class="age-badge">18+Span>
-p class="disclaimer">This site is for informational purposes only. All bonus offers are subject to the terms and conditions of the respective operators. We may receive referral commissions when you sign up through referral links.p>
-div>
-div class="footer-right">
-p>© 2025 Bonus Directory. All rights reserved.p>
-div>
-div>
-div>
-footer>
-div class="modal-overlay" id="modal-overlay">
-div class="modal" id="modal">
-div class="modal-header">
-h3 class="modal-title">Modal Titleh3>
-button class="modal-close">×button>
-div>
-div class="modal-body">
-p>Modal content will be populated dynamically.p>
-div>
-div>
-div>
-script src="script.jsscript>
-body>
-html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bonus Directory</title>
+  <meta name="description" content="A mobile-first searchable directory of online bonus offers.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="sticky-header">
+    <div class="wrap">
+      <div class="header-inner">
+        <span class="brand">BONUS DIRECTORY</span>
+      </div>
+      <div class="header-controls">
+        <div class="sort-wrapper">
+          <label for="sort-select-mobile">Sort:</label>
+          <select id="sort-select-mobile">
+            <option value="newest">Newest</option>
+            <option value="name">Name</option>
+          </select>
+        </div>
+        <div class="filter-dropdown-mobile">
+          <span class="filter-toggle-btn">Filter</span>
+          <div class="filter-dropdown-content">
+            <span class="filter-btn active" data-filter="all">All</span>
+            <span class="filter-btn" data-filter="welcome">Welcome</span>
+            <span class="filter-btn" data-filter="referral">Referral</span>
+            <span class="filter-btn" data-filter="fast-payouts">Fast Payouts</span>
+            <span class="filter-btn" data-filter="new">New</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <span class="eyebrow">BONUS INFORMATION</span>
+        <h1>Find the bonus. <br>Check the terms.</h1>
+        <p>A directory of online bonus offers. Check each operator's current terms, eligibility, turnover requirements and withdrawal limits before making decisions.</p>
+        <a class="button" href="#directory">Browse Directory</a>
+      </div>
+    </section>
+
+    <section id="directory" class="wrap section">
+      <h2>Directory</h2>
+      <div class="search-bar">
+        <input type="search" id="search-input" placeholder="Search by name, description, or tags..." aria-label="Search listings">
+        <div class="search-icon" aria-hidden="true">⌕</div>
+      </div>
+      <div class="filter-buttons">
+        <span class="filter-btn active" data-filter="all">All</span>
+        <span class="filter-btn" data-filter="welcome">Welcome</span>
+        <span class="filter-btn" data-filter="referral">Referral</span>
+        <span class="filter-btn" data-filter="fast-payouts">Fast Payouts</span>
+        <span class="filter-btn" data-filter="new">New</span>
+      </div>
+      <div class="sort-dropdown">
+        <label for="sort-select">Sort by:</label>
+        <select id="sort-select">
+          <option value="newest">Newest</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
+      <div id="cards-container" class="cards-container"></div>
+      <div id="empty-state" class="empty-state" style="display:none">
+        <div class="empty-state-icon" aria-hidden="true">⌕</div>
+        <h3>No matches found</h3>
+        <p>Try adjusting your search or filter.</p>
+      </div>
+    </section>
+
+    <section class="how-it-works">
+      <div class="wrap">
+        <h2>How It Works</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-icon" aria-hidden="true">⌕</div>
+            <h3>Search &amp; Filter</h3>
+            <p>Use the search bar and category filters to find listings that match your preferences.</p>
+          </div>
+          <div class="step">
+            <div class="step-icon" aria-hidden="true">✓</div>
+            <h3>Check Listings</h3>
+            <p>Review the details and check the operator's current terms before relying on an offer.</p>
+          </div>
+          <div class="step">
+            <div class="step-icon" aria-hidden="true">ⓘ</div>
+            <h3>Read the Terms</h3>
+            <p>Compare advertised bonuses, wagering requirements and withdrawal limits carefully.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="responsible-gambling">
+      <div class="wrap">
+        <h2>Responsible Gambling</h2>
+        <p>Gambling can cause financial harm. Set limits, understand the risks, and never wager money you cannot afford to lose.</p>
+        <p>This directory provides information only. Offers and conditions may change; verify details with the operator. Check the legal status of any service in your location before accessing it.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <span class="age-badge">18+</span>
+          <p class="disclaimer">This site is for informational purposes only. Offers are subject to the operators' terms and conditions. The site may receive referral commissions when visitors use referral links.</p>
+        </div>
+        <div class="footer-right">
+          <p>© 2026 Bonus Directory. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Listing Details</h3>
+        <button class="modal-close" type="button" aria-label="Close dialog">×</button>
+      </div>
+      <div class="modal-body"><p>Listing details will appear here.</p></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
