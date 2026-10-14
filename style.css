@@ -1070,3 +1070,27 @@ select:focus-visible,
     padding: 11px;
   }
 }
+
+
+
+/* BRAND INITIALS BADGE */
+.card-brand-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  border: 1px solid #d8b45e;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #101827, #263b58);
+  color: #f6dfaa;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(16, 24, 39, 0.12);
+}
+
+.card-verified {
+  display: none !important;
+}
