@@ -2,7 +2,7 @@
   "listings": [
     {
       "name": "Win19 AU",
-      "featured": false,
+      "featured": true,
       "category": "referral",
       "description": "Referral URL supplied for this test listing. Bonus terms and eligibility have not been verified.",
       "tags": [
