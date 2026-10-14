@@ -995,3 +995,78 @@ select:focus-visible,
     animation-duration: .01ms !important;
   }
 }
+
+
+/* PREMIUM LISTING CARD FINISH */
+.card {
+  border: 1px solid #e3d5b3;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(16, 24, 39, 0.07);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card::before {
+  height: 5px;
+  background: linear-gradient(90deg, #c79b42, #f6dfaa, #c79b42);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 35px rgba(16, 24, 39, 0.12);
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 850;
+  letter-spacing: -0.4px;
+}
+
+.card-field {
+  border: 1px solid #e8ebf1;
+  border-radius: 11px;
+  background: #f7f8fb;
+}
+
+.card-field label {
+  color: #737f93;
+  font-size: 0.68rem;
+  letter-spacing: 0.6px;
+}
+
+.card-field span {
+  color: #101827;
+  font-weight: 800;
+}
+
+.view-details-btn {
+  border-radius: 10px;
+  background: #101827;
+  color: #ffffff;
+}
+
+.referral-cta a {
+  border-radius: 10px;
+  background: #e3bb68;
+  color: #101827;
+  font-weight: 850;
+}
+
+.referral-cta a:hover {
+  background: #f6dfaa;
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 20px 17px;
+    border-radius: 16px;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+
+  .card-field {
+    padding: 11px;
+  }
+}
