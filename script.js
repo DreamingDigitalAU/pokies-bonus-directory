@@ -605,7 +605,7 @@ function openModal(listing) {
     link.href = referralUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
-    link.textContent = "Sign Up with Referral";
+    link.textContent = "Sign Up";
 
     cta.appendChild(link);
     modalBody.appendChild(cta);
