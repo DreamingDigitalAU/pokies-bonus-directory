@@ -254,7 +254,7 @@ function createCard(listing) {
   const viewBtn = document.createElement("a");
   viewBtn.className = "view-details-btn";
   viewBtn.href = "#";
-  viewBtn.textContent = "View Details";
+  viewBtn.textContent = "Details";
 
   viewBtn.addEventListener("click", (event) => {
     event.preventDefault();
@@ -273,7 +273,7 @@ function createCard(listing) {
     link.href = referralUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
-    link.textContent = "Sign Up with Referral";
+    link.textContent = "Sign Up";
 
     cta.appendChild(link);
     footer.appendChild(cta);
