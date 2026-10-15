@@ -1,7 +1,3 @@
-// =====================================================
-// BONUS DIRECTORY — PUBLIC SCRIPT
-// Supports data.json as either an array or { listings: [] }
-// =====================================================
 
 const searchInput = document.getElementById("search-input");
 const filterBtns = document.querySelectorAll(".filter-btn");
@@ -12,30 +8,19 @@ const emptyState = document.getElementById("empty-state");
 const modalOverlay = document.getElementById("modal-overlay");
 const modal = document.getElementById("modal");
 
-const modalTitle = modal
-  ? modal.querySelector(".modal-title")
-  : null;
-
-const modalBody = modal
-  ? modal.querySelector(".modal-body")
-  : null;
-
-const modalClose = modal
-  ? modal.querySelector(".modal-close")
-  : null;
+const modalTitle = modal?.querySelector(".modal-title");
+const modalBody = modal?.querySelector(".modal-body");
+const modalClose = modal?.querySelector(".modal-close");
 
 let listings = [];
 let currentFilter = "all";
 let currentSort = "newest";
 let currentSearch = "";
 
-// -----------------------------------------------------
-// LOAD LISTINGS
-// -----------------------------------------------------
-
+// Accept either a public JSON array or { listings: [...] }.
 async function loadData() {
   try {
-    const response = await fetch("data.json", {
+    const response = await fetch("data.json?v=" + Date.now(), {
       cache: "no-store"
     });
 
@@ -45,154 +30,128 @@ async function loadData() {
 
     const json = await response.json();
 
-    // Supports both JSON formats:
-    // [ { "name": "Example" } ]
-    // { "listings": [ { "name": "Example" } ] }
-
     if (Array.isArray(json)) {
       listings = json;
     } else if (json && Array.isArray(json.listings)) {
       listings = json.listings;
     } else {
-      throw new Error(
-        "data.json must be an array or contain a listings array."
-      );
+      throw new Error("Invalid data.json format");
     }
 
-    renderListings();
-
+    applyFiltersAndSort();
   } catch (error) {
-    console.error("Failed to load directory:", error);
+    console.error("Failed to load listings:", error);
 
-    if (cardsContainer) {
-      cardsContainer.innerHTML = "";
-    }
+    if (cardsContainer) cardsContainer.innerHTML = "";
 
     if (emptyState) {
       emptyState.textContent =
         "Unable to load listings. Please try again later.";
-
       emptyState.style.display = "block";
     }
   }
 }
 
-// -----------------------------------------------------
-// SAFE DISPLAY HELPERS
-// -----------------------------------------------------
-
-function textValue(value, fallback = "N/A") {
-  if (
-    value === null ||
-    value === undefined ||
-    String(value).trim() === ""
-  ) {
+function safeText(value, fallback = "N/A") {
+  if (value === undefined || value === null || String(value).trim() === "") {
     return fallback;
   }
-
   return String(value);
 }
 
-function safeUrl(value) {
+function safeWebUrl(value) {
   try {
     const url = new URL(String(value));
-
     if (url.protocol === "https:" || url.protocol === "http:") {
       return url.href;
     }
-  } catch (error) {
-    // Invalid URL.
+  } catch (_) {}
+  return "";
+}
+
+// Supports an uploaded image stored as a data URL, or an HTTPS image URL.
+function safeBannerSource(listing) {
+  const value =
+    listing.banner_image ||
+    listing.banner_image_url ||
+    listing.banner ||
+    "";
+
+  if (typeof value !== "string" || !value.trim()) return "";
+
+  const source = value.trim();
+
+  if (/^data:image\/(png|jpeg|jpg|webp|gif);base64,/i.test(source)) {
+    return source;
   }
+
+  try {
+    const url = new URL(source);
+    if (url.protocol === "https:" || url.protocol === "http:") {
+      return url.href;
+    }
+  } catch (_) {}
 
   return "";
 }
 
-function addTextElement(parent, tag, className, value) {
+function addText(parent, tag, className, value) {
   const element = document.createElement(tag);
-
-  if (className) {
-    element.className = className;
-  }
-
+  if (className) element.className = className;
   element.textContent = value;
   parent.appendChild(element);
-
   return element;
 }
 
-function addField(parent, label, value) {
-  if (
-    value === null ||
-    value === undefined ||
-    String(value).trim() === ""
-  ) {
-    return;
-  }
-
+function addCardField(parent, label, value) {
   const field = document.createElement("div");
   field.className = "card-field";
 
-  addTextElement(field, "label", "", label);
-  addTextElement(field, "span", "", String(value));
+  addText(field, "label", "", label);
+  addText(field, "span", "", safeText(value));
 
   parent.appendChild(field);
 }
 
 function addDetailField(parent, label, value) {
-  if (
-    value === null ||
-    value === undefined ||
-    String(value).trim() === ""
-  ) {
+  if (value === undefined || value === null || String(value).trim() === "") {
     return;
   }
 
   const item = document.createElement("div");
   item.className = "detail-item";
 
-  addTextElement(item, "label", "", label);
-  addTextElement(item, "span", "", String(value));
+  addText(item, "label", "", label);
+  addText(item, "span", "", String(value));
 
   parent.appendChild(item);
 }
 
-// -----------------------------------------------------
-// SEARCH, FILTER AND SORT
-// -----------------------------------------------------
-
-function renderListings() {
-  applyFiltersAndSort();
-}
-
 function applyFiltersAndSort() {
-  let filtered = listings.filter((listing) => {
-    const category = listing.category || "new";
-
+  const filtered = listings.filter((listing) => {
     if (
       currentFilter !== "all" &&
-      category !== currentFilter
+      (listing.category || "") !== currentFilter
     ) {
       return false;
     }
 
     if (currentSearch) {
-      const searchText = [
-        listing.name || "",
-        listing.partner_group || "",
-        listing.issuer || "",
-        listing.description || "",
-        listing.referral_url || "",
-        listing.welcome_bonus || "",
-        listing.daily_bonus || "",
-        listing.referral_bonus || "",
-        listing.min_withdrawal || "",
-        listing.max_withdrawal || "",
+      const searchable = [
+        listing.name,
+        listing.partner_group,
+        listing.issuer,
+        listing.description,
+        listing.referral_url,
+        listing.welcome_bonus,
+        listing.daily_bonus,
+        listing.referral_bonus,
+        listing.min_withdrawal,
+        listing.max_withdrawal,
         ...(Array.isArray(listing.tags) ? listing.tags : [])
-      ]
-        .join(" ")
-        .toLowerCase();
+      ].join(" ").toLowerCase();
 
-      if (!searchText.includes(currentSearch.toLowerCase())) {
+      if (!searchable.includes(currentSearch.toLowerCase())) {
         return false;
       }
     }
@@ -201,82 +160,111 @@ function applyFiltersAndSort() {
   });
 
   filtered.sort((a, b) => {
-    // Featured listings appear first.
-    if (a.featured === true && b.featured !== true) {
-      return -1;
-    }
-
-    if (b.featured === true && a.featured !== true) {
-      return 1;
-    }
+    if (a.featured === true && b.featured !== true) return -1;
+    if (b.featured === true && a.featured !== true) return 1;
 
     if (currentSort === "name") {
       return (a.name || "").localeCompare(b.name || "");
     }
 
-    return (b.last_checked || "").localeCompare(
-      a.last_checked || ""
-    );
+    return (b.last_checked || "").localeCompare(a.last_checked || "");
   });
 
   renderCards(filtered);
 }
 
-// -----------------------------------------------------
-// CREATE LISTING CARD
-// -----------------------------------------------------
-
 function createCard(listing) {
   const card = document.createElement("div");
-
   card.className = "card";
   card.dataset.category = listing.category || "";
   card.dataset.last_checked = listing.last_checked || "";
 
   // Featured badge.
   if (listing.featured === true) {
-    const badge = document.createElement("div");
-
-    badge.className = "featured-badge";
-    badge.textContent = "★ FEATURED";
+    const badge = addText(
+      card,
+      "div",
+      "featured-badge",
+      "★ FEATURED"
+    );
     badge.setAttribute("aria-label", "Featured listing");
-
-    card.appendChild(badge);
   }
 
-  // Brand initials.
-  const brandBadge = document.createElement("div");
+  // PER-LISTING BANNER.
+  // The banner appears below Featured and above the website logo.
+  const bannerSource = safeBannerSource(listing);
 
-  brandBadge.className = "card-brand-badge";
+  if (bannerSource) {
+    const bannerWrap = document.createElement("div");
+    bannerWrap.className = "listing-banner";
 
-  const initials = (listing.name || "BD")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(word => word.charAt(0).toUpperCase())
-    .join("");
+    // Inline styles keep the banner sized correctly on mobile.
+    bannerWrap.style.cssText = [
+      "display:block",
+      "width:100%",
+      "height:clamp(75px, 20vw, 135px)",
+      "margin:12px 0 16px",
+      "overflow:hidden",
+      "border-radius:12px",
+      "background:#f1f3f6",
+      "box-sizing:border-box"
+    ].join(";");
 
-  brandBadge.textContent = initials || "BD";
-  card.appendChild(brandBadge);
+    const bannerImage = document.createElement("img");
+    bannerImage.src = bannerSource;
+    bannerImage.alt = (listing.name || "Website") + " banner";
+    bannerImage.loading = "lazy";
+    bannerImage.style.cssText = [
+      "display:block",
+      "width:100%",
+      "height:100%",
+      "object-fit:contain",
+      "object-position:center",
+      "border-radius:12px"
+    ].join(";");
 
-  // Listing heading.
+    bannerImage.addEventListener("error", () => {
+      bannerWrap.remove();
+    });
+
+    bannerWrap.appendChild(bannerImage);
+    card.appendChild(bannerWrap);
+  }
+
+  // Website logo initials.
+  const brandBadge = addText(
+    card,
+    "div",
+    "card-brand-badge",
+    (listing.name || "BD")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(word => word.charAt(0).toUpperCase())
+      .join("") || "BD"
+  );
+
+  brandBadge.setAttribute(
+    "aria-label",
+    (listing.name || "Website") + " logo"
+  );
+
+  // Name and partner group.
   const header = document.createElement("div");
   header.className = "card-header";
 
-  addTextElement(
+  addText(
     header,
     "div",
     "card-title",
     listing.name || "Unknown Website"
   );
 
-  // Partner Group replaces Issuer.
-  const partnerGroup =
-    listing.partner_group || listing.issuer || "";
+  const partnerGroup = listing.partner_group || listing.issuer || "";
 
   if (partnerGroup) {
-    addTextElement(
+    addText(
       header,
       "div",
       "card-issuer",
@@ -290,75 +278,60 @@ function createCard(listing) {
   const body = document.createElement("div");
   body.className = "card-body";
 
-  const fields = [
+  [
+    ["Last Checked", listing.last_checked],
     ["Welcome Bonus", listing.welcome_bonus],
     ["Daily Bonus", listing.daily_bonus],
     ["Referral Bonus", listing.referral_bonus],
-    ["Minimum Withdrawal", listing.min_withdrawal],
-    ["Maximum Withdrawal", listing.max_withdrawal],
-    ["Last Checked", listing.last_checked]
-  ];
-
-  fields.forEach(([label, value]) => {
-    const field = document.createElement("div");
-
-    field.className = "card-field";
-
-    addTextElement(field, "label", "", label);
-    addTextElement(field, "span", "", textValue(value));
-
-    body.appendChild(field);
-  });
+    ["Min Withdrawal", listing.min_withdrawal],
+    ["Max Withdrawal", listing.max_withdrawal]
+  ].forEach(([label, value]) => addCardField(body, label, value));
 
   card.appendChild(body);
 
-  // Card buttons.
+  // Buttons.
   const footer = document.createElement("div");
   footer.className = "card-footer";
 
-  const viewButton = document.createElement("a");
-
-  viewButton.className = "view-details-btn";
+  const viewButton = addText(
+    footer,
+    "a",
+    "view-details-btn",
+    "View Details"
+  );
   viewButton.href = "#";
-  viewButton.textContent = "View Details";
 
   viewButton.addEventListener("click", (event) => {
     event.preventDefault();
     openModal(listing);
   });
 
-  footer.appendChild(viewButton);
-
-  const referralUrl = safeUrl(listing.referral_url);
+  const referralUrl = safeWebUrl(listing.referral_url);
 
   if (referralUrl) {
     const referralContainer = document.createElement("div");
     referralContainer.className = "referral-cta";
 
-    const referralLink = document.createElement("a");
+    const link = addText(
+      referralContainer,
+      "a",
+      "",
+      "Visit Website"
+    );
 
-    referralLink.href = referralUrl;
-    referralLink.target = "_blank";
-    referralLink.rel = "noopener noreferrer";
-    referralLink.textContent = "Visit Website";
+    link.href = referralUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
 
-    referralContainer.appendChild(referralLink);
     footer.appendChild(referralContainer);
   }
 
   card.appendChild(footer);
-
   return card;
 }
 
-// -----------------------------------------------------
-// DISPLAY CARDS
-// -----------------------------------------------------
-
 function renderCards(filtered) {
-  if (!cardsContainer) {
-    return;
-  }
+  if (!cardsContainer) return;
 
   cardsContainer.innerHTML = "";
 
@@ -367,199 +340,145 @@ function renderCards(filtered) {
       emptyState.textContent = "No matches found.";
       emptyState.style.display = "block";
     }
-
     return;
   }
 
-  if (emptyState) {
-    emptyState.style.display = "none";
-  }
+  if (emptyState) emptyState.style.display = "none";
 
   filtered.forEach((listing) => {
     cardsContainer.appendChild(createCard(listing));
   });
 }
 
-// -----------------------------------------------------
-// LISTING DETAILS MODAL
-// -----------------------------------------------------
-
 function openModal(listing) {
-  if (!modalTitle || !modalBody || !modalOverlay) {
-    return;
-  }
+  if (!modalTitle || !modalBody || !modalOverlay) return;
 
-  modalTitle.textContent =
-    listing.name || "Listing Details";
-
+  modalTitle.textContent = listing.name || "Listing Details";
   modalBody.innerHTML = "";
 
   if (listing.description) {
-    addTextElement(
-      modalBody,
-      "p",
-      "",
-      listing.description
-    );
+    addText(modalBody, "p", "", listing.description);
+  }
+
+  // Show the banner in the details popup as well.
+  const bannerSource = safeBannerSource(listing);
+
+  if (bannerSource) {
+    const banner = document.createElement("img");
+    banner.src = bannerSource;
+    banner.alt = (listing.name || "Website") + " banner";
+    banner.style.cssText =
+      "display:block;width:100%;max-height:220px;object-fit:contain;" +
+      "border-radius:12px;margin:12px 0;";
+
+    banner.addEventListener("error", () => banner.remove());
+    modalBody.appendChild(banner);
   }
 
   const details = document.createElement("div");
   details.className = "detail-grid";
 
-  const partnerGroup =
-    listing.partner_group || listing.issuer || "";
+  const partnerGroup = listing.partner_group || listing.issuer || "";
 
-  const detailFields = [
+  [
     ["Category", listing.category],
     ["Partner Group", partnerGroup],
     ["Last Checked", listing.last_checked],
     ["Welcome Bonus", listing.welcome_bonus],
     ["Daily Bonus", listing.daily_bonus],
     ["Referral Bonus", listing.referral_bonus],
-    ["Minimum Withdrawal", listing.min_withdrawal],
-    ["Maximum Withdrawal", listing.max_withdrawal]
-  ];
-
-  detailFields.forEach(([label, value]) => {
-    addDetailField(details, label, value);
-  });
+    ["Min Withdrawal", listing.min_withdrawal],
+    ["Max Withdrawal", listing.max_withdrawal]
+  ].forEach(([label, value]) => addDetailField(details, label, value));
 
   modalBody.appendChild(details);
 
-  // Show uploaded withdrawal records, if present.
+  // Withdrawal records and proof links, if present in data.json.
   const withdrawals = Array.isArray(listing.withdrawals)
     ? listing.withdrawals
     : [];
 
-  const withdrawalTotal = withdrawals.reduce(
-    (total, withdrawal) => {
-      const amount = Number(
-        withdrawal.amount ??
-        withdrawal.total ??
-        0
-      );
+  if (withdrawals.length) {
+    const section = document.createElement("section");
+    section.className = "withdrawal-details";
 
-      return total + (
-        Number.isFinite(amount) && amount > 0
-          ? amount
-          : 0
-      );
-    },
-    0
-  );
+    addText(section, "h4", "", "Withdrawal History");
 
-  if (withdrawals.length > 0) {
-    const withdrawalSection = document.createElement("section");
-    withdrawalSection.className = "withdrawal-details";
-
-    addTextElement(
-      withdrawalSection,
-      "h4",
-      "",
-      "Withdrawal History"
-    );
-
-    const total = addTextElement(
-      withdrawalSection,
-      "p",
-      "withdrawal-total",
-      "Total Withdrawals: $" +
-        withdrawalTotal.toLocaleString("en-AU", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })
-    );
-
-    total.style.color = "#16803c";
-    total.style.fontWeight = "700";
+    let total = 0;
 
     withdrawals.forEach((withdrawal) => {
       const record = document.createElement("div");
       record.className = "withdrawal-record";
 
       const amount = Number(withdrawal.amount || 0);
+      if (Number.isFinite(amount) && amount > 0) total += amount;
 
-      addTextElement(
+      addText(
         record,
         "strong",
         "",
         Number.isFinite(amount) && amount > 0
           ? "$" + amount.toFixed(2)
-          : textValue(withdrawal.amount)
+          : safeText(withdrawal.amount)
       );
 
       if (withdrawal.date) {
-        addTextElement(
-          record,
-          "span",
-          "",
-          "Date: " + withdrawal.date
-        );
+        addText(record, "span", "", "Date: " + withdrawal.date);
       }
 
       if (withdrawal.note) {
-        addTextElement(
-          record,
-          "p",
-          "",
-          withdrawal.note
-        );
+        addText(record, "p", "", withdrawal.note);
       }
 
-      const proof = safeUrl(
-        withdrawal.proof_url ||
-        withdrawal.image_url ||
-        withdrawal.image ||
-        ""
+      const proof = safeWebUrl(
+        withdrawal.proof_url || withdrawal.image_url || ""
       );
 
-      // Display an uploaded image only when a valid URL exists.
       if (proof) {
-        const imageLink = document.createElement("a");
-
-        imageLink.href = proof;
-        imageLink.target = "_blank";
-        imageLink.rel = "noopener noreferrer";
-        imageLink.textContent = "View withdrawal proof";
-
-        record.appendChild(imageLink);
+        const proofLink = addText(
+          record,
+          "a",
+          "",
+          "View withdrawal proof"
+        );
+        proofLink.href = proof;
+        proofLink.target = "_blank";
+        proofLink.rel = "noopener noreferrer";
       }
 
-      withdrawalSection.appendChild(record);
+      section.appendChild(record);
     });
 
-    modalBody.appendChild(withdrawalSection);
+    const totalElement = addText(
+      section,
+      "p",
+      "withdrawal-total",
+      "Total Withdrawals: $" + total.toFixed(2)
+    );
+
+    totalElement.style.cssText = "color:#16803c;font-weight:700;";
+    modalBody.appendChild(section);
   }
 
-  // Referral link.
-  const referralUrl = safeUrl(listing.referral_url);
+  const referralUrl = safeWebUrl(listing.referral_url);
 
   if (referralUrl) {
     const cta = document.createElement("div");
     cta.className = "detail-cta";
 
-    const link = document.createElement("a");
-
+    const link = addText(cta, "a", "", "Visit Website");
     link.href = referralUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
-    link.textContent = "Visit Website";
 
-    cta.appendChild(link);
     modalBody.appendChild(cta);
   }
 
   modalOverlay.classList.add("active");
 }
 
-// -----------------------------------------------------
-// CLOSE MODAL
-// -----------------------------------------------------
-
 function closeModal() {
-  if (modalOverlay) {
-    modalOverlay.classList.remove("active");
-  }
+  if (modalOverlay) modalOverlay.classList.remove("active");
 }
 
 if (modalClose) {
@@ -568,21 +487,13 @@ if (modalClose) {
 
 if (modalOverlay) {
   modalOverlay.addEventListener("click", (event) => {
-    if (event.target === modalOverlay) {
-      closeModal();
-    }
+    if (event.target === modalOverlay) closeModal();
   });
 }
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    closeModal();
-  }
+  if (event.key === "Escape") closeModal();
 });
-
-// -----------------------------------------------------
-// SEARCH INPUT
-// -----------------------------------------------------
 
 if (searchInput) {
   searchInput.addEventListener("input", (event) => {
@@ -591,36 +502,20 @@ if (searchInput) {
   });
 }
 
-// -----------------------------------------------------
-// CATEGORY FILTER BUTTONS
-// -----------------------------------------------------
-
 filterBtns.forEach((button) => {
   button.addEventListener("click", () => {
-    filterBtns.forEach((item) => {
-      item.classList.remove("active");
-    });
-
+    filterBtns.forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
 
     currentFilter = button.dataset.filter || "all";
-
     applyFiltersAndSort();
   });
 });
 
-// -----------------------------------------------------
-// SORTING
-// -----------------------------------------------------
-
 if (sortSelect) {
   sortSelect.addEventListener("change", (event) => {
     currentSort = event.target.value;
-
-    if (sortSelectMobile) {
-      sortSelectMobile.value = currentSort;
-    }
-
+    if (sortSelectMobile) sortSelectMobile.value = currentSort;
     applyFiltersAndSort();
   });
 }
@@ -628,17 +523,9 @@ if (sortSelect) {
 if (sortSelectMobile) {
   sortSelectMobile.addEventListener("change", (event) => {
     currentSort = event.target.value;
-
-    if (sortSelect) {
-      sortSelect.value = currentSort;
-    }
-
+    if (sortSelect) sortSelect.value = currentSort;
     applyFiltersAndSort();
   });
 }
-
-// -----------------------------------------------------
-// START
-// -----------------------------------------------------
 
 loadData();
