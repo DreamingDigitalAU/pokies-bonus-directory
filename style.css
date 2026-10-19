@@ -67,6 +67,7 @@ img {
 }
 
 /* HEADER */
+.directory-brand-icon{width:36px;height:36px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:10px}.sticky-header .brand{display:flex;align-items:center;gap:8px;color:#ffe1a0;font-weight:900;letter-spacing:.08em}
 
 .sticky-header {
   position: sticky;
